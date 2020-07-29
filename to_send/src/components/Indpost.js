@@ -1,73 +1,48 @@
-import React from "react";
-import { Image, Card } from "react-bootstrap";
-import axios from 'axios';
-import { connect } from 'react-redux'
+import React,{ useEffect} from "react";
+import { Image} from "react-bootstrap";
 import { fetch } from '../Redux/action/IndpostAction'
+import Navbar from './Navbar'
+import {useSelector,useDispatch} from 'react-redux'
 
-class IndividualPost extends React.Component {
-    constructor(props) {
-        super(props);
-        this.state={
-            fetched:false
-        }
+const IndividualPost=(props)=>{
+    const posts=useSelector((state)=>state.postId.Idposts)
+    const dispatch=useDispatch();
 
-        const id = this.props.match.params.id
-        this.componentDidMount = () => {
-            console.log("1")
-            this.props.fecthById(id)
-            this.setState({fetched:true})
+ const id = props.match.params.id
+ useEffect(() => {
+    dispatch(fetch(id))
+  }, []);
 
-
-        }
-    }
-    render() {
-        console.log("fetch",this.state.fetched)
-      if(this.props.posts){
-          const posts=this.props.posts
-          console.log("posts",posts)
-        return (
-            <React.Fragment>
+  if(posts!=undefined){
+    return (
+        <React.Fragment>
+            <Navbar/>
             <div className="row">
-                <Card>
-                <div className="offset-2 col-sm-6">
-                    <Card.Title>
-          <h2>{posts.title}</h2>
-                    </Card.Title>
-                    <Card.Body>
-          <h5 style={{justifyContent:"center"}}>{posts.body}</h5>
-                    </Card.Body>
+                <div className="card">
+                    <div className="offset-2 col-sm-6">
+                        <div className="card-title">
+                            <h2>{posts.Title}</h2>
+
+                        </div>
+                        <div className="card-body">
+                            <Image src={`/${posts.Image}`} alt="image not found" /><br /><br />
+                            <h5 style={{ justifyContent: "center" }}>{posts.Body}</h5>
+                        </div>
+
+                    </div>
+
+                    <div></div>
                 </div>
-                </Card>
-  
+
             </div>
-          </React.Fragment>
-        )
-      }
-      else{
-          return(
-              <h1>not</h1>
-          )
-      }
-       
-    }
+        </React.Fragment>
+    )
+  }
+  else{
+      return<h1>not</h1>
+  }
+
+
 }
 
-const mapStateToProps = (state) => {
-    console.log("posts in state3",state.postId.Idposts)
-    return {
-        posts: state.postId.Idposts
-    }
-
-}
-const mapDispatchToProps = (dispatch) => {
-    return {
-        fecthById: (id) => {
-            dispatch(fetch(id))
-        }
-    }
-}
-
-
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(IndividualPost)
+export default IndividualPost
