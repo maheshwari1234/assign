@@ -1,78 +1,35 @@
-import React from 'react';
+import React,{ useEffect} from 'react';
 import Navbar from "./Navbar"
 import { searchByTagAction } from '../Redux/action/searchAction'
-import { connect } from "react-redux"
-import { Card } from "react-bootstrap";
+import Post from "./post"
+import {useSelector,useDispatch} from 'react-redux'
 
-class Search extends React.Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            posts: [],
-            fetched: false
-        }
+const Search=(props)=>{
+    const searched=useSelector((state)=>state.searchByTag.data)
+    const dispatch=useDispatch();
 
-        const tag = this.props.match.params.tag
-        console.log("tag",tag)
-        this.componentDidMount = () => {
-            console.log("sear2")
+    const tag = props.match.params.tag
+    useEffect(() => {
+       dispatch(searchByTagAction(tag))
+     }, []);
 
-            
-            this.props.search_by_tag(tag)
-
-
-        }
-
-    }
-
-    render() {
-        if (this.props.searched) {
-            const posts = this.props.searched
-            console.log("posts", posts)
-            return (
-                <React.Fragment>
-                    <div className="row">
-                        <Card>
-                            <div className="offset-2 col-sm-6">
-                                <Card.Title>
-                                    <h2>{posts.title}</h2>
-                                </Card.Title>
-                                <Card.Body>
-                                    <h5 style={{ justifyContent: "center" }}>{posts.body}</h5>
-                                </Card.Body>
-                            </div>
-                        </Card>
-
-                    </div>
-                </React.Fragment>
-            )
-        }
-        else {
-            return (
-                <h1>not</h1>
-            )
-        }
-
-    }
-}
-
-const mapStateToProps = (state) => {
-    console.log("search",state.searchByTag.data)
-    return {
-        searched: state.searchByTag.data
-
-    }
+     if(searched!=undefined){
+         const postArray = searched.map((post) => {
+            return <Post id={post.id} Title={post.Title} Brief={post.Brief} Image={post.Image} />
+        })
+        return (
+            <React.Fragment>
+                <Navbar/>
+                <div>
+                    {postArray}
+                </div>
+            </React.Fragment>
+        )
+     }
+     else{
+         return<h1>not search</h1>
+     }
 
 }
 
-const mapDispatchToProps = (dispatch) => {
-    return {
-        search_by_tag: (word) => {
-            dispatch(searchByTagAction(word))
-        }
-    }
-
-}
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(Search)
+export default Search
